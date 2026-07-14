@@ -17,3 +17,4 @@ def get_drop_point(grid):
             continue
         if grid[0][drop_point] == " ":
             valid = True
+    return drop_point
