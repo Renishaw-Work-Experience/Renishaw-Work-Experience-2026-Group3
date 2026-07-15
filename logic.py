@@ -108,7 +108,7 @@ def do_turn(drop_point):
         if drop_point == None:
             return None
         if win:
-            return "WIN"
+            return "WIN", drop_point
         if turn == "R":
             turn = "Y"
         elif turn == "Y":

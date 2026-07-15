@@ -26,6 +26,7 @@ def drop_update():
     running = True
     direction = [0,0]
     RED = (255, 0, 0)
+    BLUE = (0, 0, 255)
     WHITE = (255, 255, 255)
     YELLOW = (255, 255, 0)
     BLACK = (0, 0, 0)
@@ -36,6 +37,7 @@ def drop_update():
     while running:
         
         surface.fill(WHITE)
+        pygame.draw.rect(surface, BLUE, (WIDTH//2 - 525/2, HEIGHT//2 - 450/2 + 37.5, 525, 450), 0)
         pygame.draw.circle(surface,RED if turn == "R" else YELLOW,pos,37.5,0)
         for y in range(len(grid)):
             for x in range(len(grid[0])):
@@ -89,20 +91,21 @@ def drop_update():
                 if event.key == pygame.K_z:
                     add_pos = logic.do_turn(result)
                     if add_pos == None:
-                        pass
-                    elif add_pos == "WIN":
+                        add_pos = [-1,-1]
+                    elif add_pos[0] == "WIN":
+                        print(add_pos[1])
+                        add_pos = add_pos[1]
                         print("WINNER IS",turn)
                         winner = "RED" if turn == "R" else "YELLOW"
                         text = font.render(winner + " WINS!", True, RED if turn == "R" else YELLOW)
                         shadow = font.render(winner + " WINS!", True, BLACK)
-                        
-                        wait_till_win = 100    
-                    else:
+                        wait_till_win = 200    
+                    if not add_pos == None:
+                        falling = True
                         grid[add_pos[1]][add_pos[0]] = turn
                         fall_pos = pos
                         bounces = 0
-                        fall_velocity = (0,0)
-                        falling = True
+                        fall_velocity = (0,-5)
                         if turn == "R":
                             turn = "Y"
                         elif turn == "Y":
