@@ -1,18 +1,22 @@
 import display
-import p
-
 def start():
     global grid
     global x_rows
     global y_colums
+    global turn
+    global win
     x_rows = 7
     y_colums = 6
+    win = False
+    turn = "R"
     grid = []
 
     for y in range(y_colums):
         grid.append([])
         for x in range(x_rows):
             grid[y].append(" ")
+
+    return grid
 
 
 
@@ -30,6 +34,7 @@ def drop(x_pos,turn):
     return [x_pos,y_drop]
 
 def detect_wins():
+    global win
     for y in range(len(grid)):
         same = 0
         type = " "
@@ -38,6 +43,7 @@ def detect_wins():
                 same += 1
                 if same == 3:
                     print("WIN PLAYER",type)
+                    return True
             else:
                 same = 0
                 type = grid[y][x]
@@ -50,6 +56,7 @@ def detect_wins():
                 same += 1
                 if same == 3:
                     print("WIN PLAYER",type)
+                    return True
             else:
                 same = 0
                 type = grid[y][x]
@@ -65,6 +72,7 @@ def detect_wins():
                 same += 1
                 if same == 3:
                     print("WIN PLAYER",type)
+                    return True
             else:
                 same = 0
                 type = grid[y][x]
@@ -82,31 +90,25 @@ def detect_wins():
                 same += 1
                 if same == 3:
                     print("WIN PLAYER",type)
+                    return True
             else:
                 same = 0
                 type = grid[y][x]
             pos[0] -= 1
             pos[1] += 1
+    return False
         
-
-            
-
-
-def main():
-    win = False
-    turn = "Y"
-    while not win:
-        display.print_grid(x_rows,y_colums,grid)
-        detect_wins()
-
+def do_turn(drop_point):
+    global turn
+    global win
+    if drop_point == None:
+        pass
+    else:
+        drop_point = drop(drop_point,turn)
+        print(drop_point)
+        win = detect_wins()
         if turn == "R":
             turn = "Y"
         elif turn == "Y":
             turn = "R"
-
-        drop_point = display.get_drop_point(grid)
-        drop_point = drop(drop_point, turn)
-        print(drop_point)
-        
-start()
-main()
+        return drop_point
