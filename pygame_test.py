@@ -3,13 +3,17 @@ from tkinter import font
 
 import random
 import pygame
-import playsound
 import logic
 grid = []
 turn = "R"
 
+def draw_sprite(pos,image):
+    global surface
+    surface.blit(image,(pos[0] - image.size[0]//2,pos[1] - image.size[1]//2))
+
 
 def drop_update():
+    global surface
     global grid
     global rendered_grid
     global turn
@@ -37,27 +41,37 @@ def drop_update():
     bounces = 0
     particles = []
     particle_velocity = []
+    red_counter = pygame.image.load("sprites/counter_red.png")
+    red_counter = pygame.transform.scale(red_counter,(75,75))
+    yellow_counter = pygame.image.load("sprites/counter_yellow.png")
+    yellow_counter = pygame.transform.scale(yellow_counter,(75,75))
     while running:
-        surface.fill(WHITE)
-        pygame.draw.rect(surface, BLUE, (WIDTH//2 - 525/2, HEIGHT//2 - 450/2 + 37.5, 525, 450), 0)
-        pygame.draw.circle(surface,RED if turn == "R" else YELLOW,pos,37.5,0)
+        surface.fill(BLACK)
+        pygame.draw.rect(surface, BLUE, (WIDTH//2 - 525/2 - 15, HEIGHT//2 - 450/2 + 37.5 - 15, 525 + 30, 450 + 30), 0)
+        if turn == "R":
+            draw_sprite(pos,red_counter)
+        elif turn == "Y":
+            draw_sprite(pos,yellow_counter)
         for y in range(len(grid)):
             for x in range(len(grid[0])):
                 x_pos = (x-3) * 75 + WIDTH//2
                 y_pos = (y-2) * 75 + HEIGHT//2 
                 if add_pos == [x,y] and falling:
-                    colour = WHITE
+                    pygame.draw.circle(surface,BLACK,(x_pos,y_pos),37.5,0)
                 elif grid[y][x] == "R" :
-                    colour = RED
+                    draw_sprite((x_pos,y_pos),red_counter)  
                 elif grid[y][x] == "Y":
-                    colour = YELLOW
+                    draw_sprite((x_pos,y_pos),yellow_counter)        
                 else:
-                    colour = WHITE
-                pygame.draw.circle(surface,colour,(x_pos,y_pos),37.5,0)
+                    pygame.draw.circle(surface,BLACK,(x_pos,y_pos),37.5,0)
+                
         if falling:
             x_pos = (add_pos[0]-3) * 75 + WIDTH//2
             y_pos = (add_pos[1]-2) * 75 + HEIGHT//2 
-            pygame.draw.circle(surface,YELLOW if turn == "R" else RED,fall_pos,37.5,0)
+            if turn == "R":
+                draw_sprite(fall_pos,yellow_counter)
+            elif turn == "Y":
+                draw_sprite(fall_pos,red_counter)
             fall_pos = (fall_pos[0] + fall_velocity[0],fall_pos[1] + fall_velocity[1])
             fall_velocity = (fall_velocity[0],fall_velocity[1] + 0.2)
             if fall_pos[1] > y_pos:
@@ -107,7 +121,7 @@ def drop_update():
                         print("WINNER IS",turn)
                         winner = "RED" if turn == "R" else "YELLOW"
                         text = font.render(winner + " WINS!", True, RED if turn == "R" else YELLOW)
-                        shadow = font.render(winner + " WINS!", True, BLACK)
+                        shadow = font.render(winner + " WINS!", True, WHITE)
                         wait_till_win = 200    
                     if not (add_pos == [-1,-1]) or add_pos == None:
                         falling = True
@@ -122,17 +136,19 @@ def drop_update():
                     
                     if all(grid[0][x] != " " for x in range(7)):
                         draw = True
-                        text = font.render("DRAW!", True, BLACK)
-                        shadow = font.render("DRAW!", True, WHITE)
+                        text = font.render("DRAW!", True, WHITE)
+                        shadow = font.render("DRAW!", True, BLACK)
                         wait_till_win = 100
         
         if wait_till_win >= 0:
             wait_till_win -= 1
+            surface.blit(shadow, (WIDTH//2 - text.get_width()//2 - 5, HEIGHT//2 - text.get_height()//2 - 5))
             surface.blit(shadow, (WIDTH//2 - text.get_width()//2 + 5, HEIGHT//2 - text.get_height()//2 + 5))
             surface.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
         if wait_till_win == 0:
             grid = logic.start()
             turn = "R"
+        
         pygame.display.flip()
         clock.tick(120)
     
