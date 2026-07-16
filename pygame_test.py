@@ -19,7 +19,7 @@ def drop_update():
     pygame.init()
     WIDTH = 1000
     HEIGHT = 1800
-    font = pygame.font.Font("freesansbold.ttf", 64)
+    font = pygame.font.Font("freesansbold.ttf", 128)
     add_pos = [-1,-1]
     surface = pygame.display.set_mode((WIDTH,HEIGHT))
     pos = (WIDTH//2,HEIGHT//2 - 75 * 3 - 25)
@@ -42,9 +42,11 @@ def drop_update():
     particle_velocity = []
     red_counter = pygame.image.load("sprites/counter_red.png")
     red_counter = pygame.transform.scale(red_counter,(75,75))
-    yellow_counter = pygame.image.load("sprites/counter_yellow.png")
     board_sprite = pygame.image.load("sprites/Board.png")
-    print(yellow_counter.size)
+    new_size = (board_sprite.size[0]//2, board_sprite.size[1]//2)
+    board_sprite = pygame.transform.scale(board_sprite,(1050//2,900//2))
+
+    yellow_counter = pygame.image.load("sprites/counter_yellow.png")
     new_size = (yellow_counter.size[0]//2, yellow_counter.size[1]//2)
     yellow_counter = pygame.transform.scale(yellow_counter,new_size)
     background_sound = pygame.mixer.Sound("sound/Quiet_glade.mp3")
@@ -52,7 +54,6 @@ def drop_update():
     background_sound.play(-1)
     while running:
         surface.fill(BLACK)
-        pygame.draw.rect(surface, BLUE, (WIDTH//2 - 525/2 - 15, HEIGHT//2 - 450/2 + 37.5 - 15, 525 + 30, 450 + 30), 0)
         if turn == "R":
             draw_sprite(pos,red_counter,(75,75))
         elif turn == "Y":
@@ -69,7 +70,7 @@ def drop_update():
                     draw_sprite((x_pos,y_pos),yellow_counter,(75,75))        
                 else:
                     pygame.draw.circle(surface,BLACK,(x_pos,y_pos),37.5,0)
-                
+        
         if falling:
             x_pos = (add_pos[0]-3) * 75 + WIDTH//2
             y_pos = (add_pos[1]-2) * 75 + HEIGHT//2 
@@ -157,7 +158,7 @@ def drop_update():
                     grid = logic.start()
                     turn = "R"
                     
-        
+        surface.blit(board_sprite,(WIDTH//2 - board_sprite.size[0]//2 + 2,HEIGHT//2 - board_sprite.size[1]//2 + 40))   
         if wait_till_win >= 0:
             wait_till_win -= 1
             surface.blit(shadow, (WIDTH//2 - text.get_width()//2 - 5, HEIGHT//2 - text.get_height()//2 - 5))
