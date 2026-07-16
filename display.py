@@ -1,3 +1,5 @@
+import logic
+
 def print_grid(x_rows, y_colums, grid):
     print(" 0123456")
     for y in range(y_colums):
@@ -18,3 +20,13 @@ def get_drop_point(grid):
         if grid[0][drop_point] == " ":
             valid = True
     return drop_point
+
+grid = logic.start()
+while True:
+    print_grid(logic.x_rows, logic.y_colums, grid)
+    drop_point = get_drop_point(grid)
+    add_pos = logic.do_turn(drop_point)
+    if add_pos == None:
+        print("Column is full. Please choose another column.")
+    if add_pos[0] == "WIN":
+        break

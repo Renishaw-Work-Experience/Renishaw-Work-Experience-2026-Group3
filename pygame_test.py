@@ -1,6 +1,7 @@
 from email.mime import text
 from tkinter import font
 
+import random
 import pygame
 import playsound
 import logic
@@ -34,8 +35,9 @@ def drop_update():
     wait_till_win = -1
     move_time = 0
     bounces = 0
+    particles = []
+    particle_velocity = []
     while running:
-        
         surface.fill(WHITE)
         pygame.draw.rect(surface, BLUE, (WIDTH//2 - 525/2, HEIGHT//2 - 450/2 + 37.5, 525, 450), 0)
         pygame.draw.circle(surface,RED if turn == "R" else YELLOW,pos,37.5,0)
@@ -60,6 +62,9 @@ def drop_update():
             fall_velocity = (fall_velocity[0],fall_velocity[1] + 0.2)
             if fall_pos[1] > y_pos:
                 bounces += 1
+                for i in range(10 - bounces * 2):
+                    particles.append((fall_pos[0],fall_pos[1]+37.5))
+                    particle_velocity.append((random.uniform(-5,5),random.uniform(-5,-1)))
                 fall_velocity = (fall_velocity[0],fall_velocity[1] * -0.4)
                 fall_pos = (fall_pos[0],y_pos)
                 print("FALL VELOCITY",fall_velocity[1])
@@ -68,7 +73,10 @@ def drop_update():
                 sound.play()
                 if bounces == 3:
                     falling = False
-                
+        for i in range(len(particles)):
+            particles[i] = (particles[i][0] + particle_velocity[i][0],particles[i][1] + particle_velocity[i][1])
+            particle_velocity[i] = (particle_velocity[i][0],particle_velocity[i][1] + 0.2)
+            pygame.draw.circle(surface,RED if turn == "Y" else YELLOW,particles[i],4,0)
         if direction != [0,0]:
             pos = (pos[0] + direction[0] * 15,pos[1] + direction[1] * 15)
             move_time -= 1
@@ -88,7 +96,8 @@ def drop_update():
                     direction = [1,0]
                     result += 1
                     move_time = 5
-                if event.key == pygame.K_z:
+                key_pressed = (event.key == pygame.K_z) or (event.key == pygame.K_RETURN) or (event.key == pygame.K_SPACE)
+                if key_pressed and not falling and wait_till_win < 0:
                     add_pos = logic.do_turn(result)
                     if add_pos == None:
                         add_pos = [-1,-1]
@@ -100,7 +109,7 @@ def drop_update():
                         text = font.render(winner + " WINS!", True, RED if turn == "R" else YELLOW)
                         shadow = font.render(winner + " WINS!", True, BLACK)
                         wait_till_win = 200    
-                    if not add_pos == None:
+                    if not (add_pos == [-1,-1]) or add_pos == None:
                         falling = True
                         grid[add_pos[1]][add_pos[0]] = turn
                         fall_pos = pos

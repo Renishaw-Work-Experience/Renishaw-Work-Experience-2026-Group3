@@ -1,4 +1,3 @@
-import display
 def start():
     global grid
     global x_rows
@@ -114,3 +113,4 @@ def do_turn(drop_point):
         elif turn == "Y":
             turn = "R"
         return drop_point 
+
