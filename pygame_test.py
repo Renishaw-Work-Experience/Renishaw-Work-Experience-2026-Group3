@@ -190,8 +190,8 @@ def drop_update():
         clock.tick(120)
     
     
-
-grid = logic.start()
-drop_update()
+if __name__ == "__main__":
+    grid = logic.start()
+    drop_update()
     
     
