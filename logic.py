@@ -20,8 +20,11 @@ def start():
 
 
 def drop(x_pos,turn):
+    global valid
     y_drop = 0
     valid = False
+    if x_pos < 0 or x_pos > 6:
+        return None
     if grid[y_drop][x_pos] != " ":
         return None
     while y_drop != 5 and not valid:
