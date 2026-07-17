@@ -17,6 +17,9 @@ def drop_update():
     global rendered_grid
     global turn
     pygame.init()
+    title_screen = pygame.image.load("sprites/Game_logo.png")
+    title_screen_pos = (0,0)
+    title_screen_velocity = (0,0)
     WIDTH = 1000
     HEIGHT = 1800
     font = pygame.font.Font("freesansbold.ttf", 128)
@@ -50,7 +53,6 @@ def drop_update():
     new_size = (yellow_counter.size[0]//2, yellow_counter.size[1]//2)
     yellow_counter = pygame.transform.scale(yellow_counter,new_size)
     background_sound = pygame.mixer.Sound("sound/Quiet_glade.mp3")
-    background_sound.set_volume(1)
     background_sound.play(-1)
     while running:
         surface.fill(BLACK)
@@ -129,6 +131,7 @@ def drop_update():
                     if add_pos == None:
                         add_pos = [-1,-1]
                     elif add_pos[0] == "WIN":
+                        background_sound.set_volume(0)
                         win_sound = pygame.mixer.Sound("sound/Winning.mp3")
                         win_sound.set_volume(0.5)
                         win_sound.play()
@@ -138,7 +141,7 @@ def drop_update():
                         winner = "RED" if turn == "R" else "YELLOW"
                         text = font.render(winner + " WINS!", True, RED if turn == "R" else YELLOW)
                         shadow = font.render(winner + " WINS!", True, WHITE)
-                        wait_till_win = 200    
+                        wait_till_win = round(win_sound.get_length() * 90)
                     if not (add_pos == [-1,-1]) or add_pos == None:
                         falling = True
                         grid[add_pos[1]][add_pos[0]] = turn
@@ -153,21 +156,36 @@ def drop_update():
                         draw = True
                         text = font.render("DRAW!", True, WHITE)
                         shadow = font.render("DRAW!", True, BLACK)
-                        wait_till_win = 100
+                        wait_till_win = 300
+                        winner = "DRAW"
                 if event.key == pygame.K_r:
+                    wait_till_win = -1
                     grid = logic.start()
                     turn = "R"
                     
         surface.blit(board_sprite,(WIDTH//2 - board_sprite.size[0]//2 + 2,HEIGHT//2 - board_sprite.size[1]//2 + 40))   
         if wait_till_win >= 0:
-            wait_till_win -= 1
             surface.blit(shadow, (WIDTH//2 - text.get_width()//2 - 5, HEIGHT//2 - text.get_height()//2 - 5))
             surface.blit(shadow, (WIDTH//2 - text.get_width()//2 + 5, HEIGHT//2 - text.get_height()//2 + 5))
             surface.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
+        if wait_till_win > 0:
+            wait_till_win -= 1
         if wait_till_win == 0:
-            grid = logic.start()
-            turn = "R"
-        
+            if winner == "RED":
+                reset_colour = RED
+            elif winner == "YELLOW":
+                reset_colour = YELLOW
+            else:
+                reset_colour = BLACK
+            reset_font = pygame.font.Font("freesansbold.ttf", 48)
+            shadow_reset = reset_font.render("Press [r] to reset", True, WHITE)
+            text_reset = reset_font.render("Press [r] to reset", True, reset_colour)
+            surface.blit(shadow_reset, (WIDTH//2 - text_reset.get_width()//2 - 5, HEIGHT//2 - text_reset.get_height()//2 - 5 + 75))
+            surface.blit(shadow_reset, (WIDTH//2 - text_reset.get_width()//2 + 5, HEIGHT//2 - text_reset.get_height()//2 + 5 + 75))
+            surface.blit(text_reset, (WIDTH//2 - text_reset.get_width()//2, HEIGHT//2 - text_reset.get_height()//2 + 75))
+        if wait_till_win in [0, -1]:
+            background_sound.set_volume(1)
+
         pygame.display.flip()
         clock.tick(120)
     
