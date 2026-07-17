@@ -17,11 +17,13 @@ def drop_update():
     global rendered_grid
     global turn
     pygame.init()
-    title_screen = pygame.image.load("sprites/Game_logo.png")
-    title_screen_pos = (0,0)
+    WIDTH = 1300
+    HEIGHT = 1850
+    title_screen_left = pygame.image.load("sprites/wasd.png")
+    title_screen_right = pygame.image.load("sprites/arrows.png")
+    title_screen_pos = (WIDTH//2 - title_screen_left.size[0]//2,HEIGHT//2 - title_screen_left.size[1]//2)
     title_screen_velocity = (0,0)
-    WIDTH = 1000
-    HEIGHT = 1800
+    title_screen_move = False
     font = pygame.font.Font("freesansbold.ttf", 128)
     add_pos = [-1,-1]
     surface = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -108,6 +110,7 @@ def drop_update():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN and direction == [0,0]:
+                title_screen_move = True
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 if turn == "R":
@@ -186,6 +189,13 @@ def drop_update():
         if wait_till_win in [0, -1]:
             background_sound.set_volume(1)
 
+        if title_screen_move and title_screen_pos[1] < 10000:
+            title_screen_velocity = (title_screen_velocity[0],title_screen_velocity[1] + 0.1)
+        else:
+            title_screen_velocity = (0,0)
+        title_screen_pos = (title_screen_pos[0] + title_screen_velocity[0],title_screen_pos[1] + title_screen_velocity[1])
+        surface.blit(title_screen_left,(title_screen_pos[0] - 150,title_screen_pos[1]))
+        surface.blit(title_screen_right,(title_screen_pos[0] + 150,title_screen_pos[1]))
         pygame.display.flip()
         clock.tick(120)
     
